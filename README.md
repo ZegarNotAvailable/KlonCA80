@@ -14,6 +14,12 @@
     - złącze systemowe CA80,
     - złącze modułu MPR121 wraz z zasilaczem 3,3V,
     - emulator klawiatury CA80 oraz ZK (umożliwia "wciskanie" klawiszy przez serial lub touch),
+## MIK89
+- Rozszerzona wersja płytki z portem użytkownika (8255) oraz Z80CTC,
+    - dodany generator kwarcowy,
+    - dodany dzielnik NMI,
+    - dodane złącze "daisy chain",
+    - dodane złącze "ZX serial" (zlecenie 8E opis w MIK06 str. 227),
 
 ## Oprogramowanie w Arduino IDE    
 - Oprogramowanie również pochodzi od J4F. Poprawiłem kilka fragmentów w celu przyspieszenia ładowania programu do RAM, oraz dodałem:
