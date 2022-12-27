@@ -14,7 +14,8 @@
     - złącze systemowe CA80,
     - złącze modułu MPR121 wraz z zasilaczem 3,3V,
     - emulator klawiatury CA80 oraz ZK (umożliwia "wciskanie" klawiszy przez serial lub touch),
-## MIK89
+## MIK89.
+![MIK89](https://raw.githubusercontent.com/ZegarNotAvailable/KlonCA80/main/MIK89_EXT.png)
 - Rozszerzona wersja płytki z portem użytkownika (8255) oraz Z80CTC,
     - dodany generator kwarcowy,
     - dodany dzielnik NMI,
