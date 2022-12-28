@@ -840,7 +840,7 @@ void sendTime()
   digitalWrite(MEM_EN_, LOW);         // Force the RAM in HiZ (CE2 = LOW)
   loadHL(CA80_SEC);                   // Set Z80 HL = SEC (used as pointer to RAM);
   {
-    Serial.print("Ustawianie czasu...");
+    Serial.println("Real time setting...");
     for (word i = 0; i < 7; i++)
     {
       loadByteToRAM(time[i]);         // Write current data byte into RAM
@@ -861,8 +861,10 @@ void sendRecord()
     }
     else
     {
-      Serial.println("Koniec pliku CA80.HEX");
-      ;
+      if (debug)
+      {
+        Serial.println("Koniec pliku CA80.HEX");
+      }
     }
     byte suma = getByteFromFile(); // zakladam, ze plik jest poprawny i nie sprawdzam sumy
     // ale trzeba ja przeczytac!!!
@@ -905,8 +907,11 @@ word getAdrFromFile()
 void sendDataToCA80(byte l, word adr)  //l - liczba bajtow do przeslania, adr - adres pierwszego bajtu
 {
   digitalWrite(MEM_EN_, LOW);         // Force the RAM in HiZ (CE2 = LOW)
-  Serial.print("Wpisanie rekordu z pliku CA80.HEX...");
-  Serial.println(adr , HEX);
+  if (debug)
+  {
+    Serial.print("Wpisanie rekordu z pliku CA80.HEX...");
+    Serial.println(adr , HEX);
+  }
   loadHL(adr);                   // Set Z80 HL = SEC (used as pointer to RAM);
   for (byte i = 0; i < l; i++)
   {
@@ -917,7 +922,7 @@ void sendDataToCA80(byte l, word adr)  //l - liczba bajtow do przeslania, adr - 
 
 void sendFileFromSD()
 {
-  Serial.print("Initializing SD card...");
+  Serial.println("Initializing SD card...");
   delay(200);
   if (!SD.begin(SD_CS))
   {
@@ -970,8 +975,6 @@ void setup()
 
   Wire.begin();                                   // Wake up I2C bus
   Serial.begin(115200);
-  //Serial.println("\033[?25l");  //ANSI CURSOR INVISIBLE
-  //Serial.println("\033[2J");  //ANSI CLEAR SCREEN
 
   // ----------------------------------------
   // INITIALIZATION
@@ -991,8 +994,8 @@ void setup()
   pinMode(USER, OUTPUT);                          // USER led OFF
   digitalWrite(USER, HIGH);
   pinMode(INT_, INPUT_PULLUP);                    // Configure INT_ and set it NOT ACTIVE
-  pinMode(INT_, OUTPUT);
-  digitalWrite(INT_, HIGH);
+  //pinMode(INT_, OUTPUT);
+  //digitalWrite(INT_, HIGH);
   pinMode(MEM_EN_, OUTPUT);                       // Configure MEM_EN_ as output
   digitalWrite(MEM_EN_, HIGH);                    // Set MEM_EN_ HZ
   pinMode(WAIT_, INPUT);                          // Configure WAIT_ as input
@@ -1008,12 +1011,6 @@ void setup()
   pinMode(WR_, INPUT_PULLUP);                     // Configure WR_ as input with pull-up
   pinMode(AD0, INPUT_PULLUP);
 
-  // Initialize the Logical RAM Bank (32KB) to map into the lower half of the Z80 addressing space
-  // pinMode(BANK0, OUTPUT);                         // Set RAM Logical Bank 1 (Os Bank 0)
-  // digitalWrite(BANK0, HIGH);
-  // pinMode(BANK1, OUTPUT);
-  // digitalWrite(BANK1, LOW);
-
   // Initialize CLK (single clock pulses mode) and reset the Z80 CPU
   pinMode(CLK, OUTPUT);                           // Set CLK as output
   digitalWrite(CLK, LOW);
@@ -1027,12 +1024,6 @@ void setup()
   // Initialize MCU_RTS and MCU_CTS and reset uTerm (A071218-R250119) if present
   pinMode(SNMI, OUTPUT);                      // Blokada NMI i INT w CA80
   digitalWrite(SNMI, HIGH);
-  //pinMode(MCU_RTS_, OUTPUT);
-  //digitalWrite(MCU_RTS_, LOW);                    // Reset uTerm (A071218-R250119)
-  //delay(100);
-  //digitalWrite(MCU_RTS_, HIGH);
-  //delay(500);
-
   // Read the Z80 CPU speed mode
   if (EEPROM.read(clockModeAddr) > 1)             // Check if it is a valid value, otherwise set it to low speed
     // Not a valid value. Set it to low speed
@@ -1042,18 +1033,15 @@ void setup()
   clockMode = EEPROM.read(clockModeAddr);         // Read the previous stored value
 
   // Print some system information
-  //Serial.begin(115200);
   Serial.println(F("\r\n\nCA80 MONITOR loader\r\n"));
 
   // Print the Z80 clock speed mode
-  Serial.print(F("IOS: Z80 clock set at "));
+  Serial.print(F("Z80 clock set at "));
   if (clockMode) Serial.print(CLOCK_LOW);
   else Serial.print(CLOCK_HIGH);
-  Serial.println("MHz");
+  Serial.println("MHz.");
 
   while (Serial.available() > 0) Serial.read();   // Flush serial Rx buffer
-  //Serial.println(F("\r\nPress any key to run."));
-  //while (Serial.available() < 1); // Wait a key
   digitalWrite(MEM_EN_, LOW);         // Force the RAM in HiZ (CE2 = LOW)
   pinMode(errorLED, OUTPUT);
   pinMode(fileOpenLED, OUTPUT);
@@ -1080,7 +1068,7 @@ void setup()
   // Load from flash
   {
 
-    Serial.print("Programowanie...");
+    Serial.println("CA80 Monitor loading...");
     digitalWrite(USER, LOW);
 
     for (word i = 0; i < BootImageSize; i++)
@@ -1109,7 +1097,7 @@ void setup()
   TCCR2 &= ~(1 << COM21);
   OCR2 = clockMode;                               // Set the compare value to toggle OC2 (0 = low or 1 = high)
   pinMode(CLK, OUTPUT);                           // Set OC2 as output and start to output the clock
-  Serial.println("IOS: Z80 is running from now");
+  Serial.println("Z80 is running from now");
   Serial.println();
 
   // Flush serial Rx buffer
@@ -1403,13 +1391,8 @@ void mpr121_setup(void)
     set_register(MPR121, ATO_CFGT, 0xB5);*/  // Target = 0.9*USL = 0xB5 @3.3V
 
   set_register(MPR121, ELE_CFG, 0x0C);
-
 }
-/*
-  boolean checkInterrupt(void) {
-  return digitalRead(irqpin);
-  }
-*/
+
 void set_register(byte address, unsigned char r, unsigned char v)
 {
   Wire.beginTransmission(address);
@@ -1420,8 +1403,11 @@ void set_register(byte address, unsigned char r, unsigned char v)
 
 void sendKey (byte k)
 {
-  //Serial.print(" ");
-  //Serial.println(k, HEX);
+  if (debug)
+  {
+    Serial.print(" ");
+    Serial.println(k, HEX);
+  }
   Wire.beginTransmission(PCF_kbd);
   Wire.write(k);                    //Wysylamy kod klawisza
   Wire.endTransmission();
