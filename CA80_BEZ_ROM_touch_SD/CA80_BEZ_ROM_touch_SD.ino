@@ -13,11 +13,13 @@
 #include <SPI.h>
 #include <SD.h>
 
+#define VER "CA80_BEZ_ROM_touch_SD"  //For info
 //definicje SD
-#define SD_CS  4           // PB4 pin 5    SD SPI
+#define SD_CS 4  // PB4 pin 5    SD SPI
 File myFile;
-#define errorLED  11       // PD3 pin 17   BANK1  RAM Memory bank address (High)
-#define fileOpenLED  21    // PC5 pin 27   Z80 MREQ
+#define CR 0xd          //ASCII CR
+#define errorLED 11     // PD3 pin 17   BANK1  RAM Memory bank address (High)
+#define fileOpenLED 21  // PC5 pin 27   Z80 MREQ
 
 
 // ------------------------------------------------------------------------------
@@ -26,43 +28,43 @@ File myFile;
 //
 // ------------------------------------------------------------------------------
 
-#define   D0            24    // PA0 pin 40   Z80 data bus
-#define   D1            25    // PA1 pin 39
-#define   D2            26    // PA2 pin 38
-#define   D3            27    // PA3 pin 37
-#define   D4            28    // PA4 pin 36
-#define   D5            29    // PA5 pin 35
-#define   D6            30    // PA6 pin 34
-#define   D7            31    // PA7 pin 33
+#define D0 24  // PA0 pin 40   Z80 data bus
+#define D1 25  // PA1 pin 39
+#define D2 26  // PA2 pin 38
+#define D3 27  // PA3 pin 37
+#define D4 28  // PA4 pin 36
+#define D5 29  // PA5 pin 35
+#define D6 30  // PA6 pin 34
+#define D7 31  // PA7 pin 33
 
-#define   AD0           18    // PC2 pin 24   Z80 A0
-#define   WR_           19    // PC3 pin 25   Z80 WR
-#define   RD_           20    // PC4 pin 26   Z80 RD
+#define AD0 18  // PC2 pin 24   Z80 A0
+#define WR_ 19  // PC3 pin 25   Z80 WR
+#define RD_ 20  // PC4 pin 26   Z80 RD
 //#define   MREQ_         21    // PC5 pin 27   Z80 MREQ
-#define   RESET_        22    // PC6 pin 28   Z80 RESET
+#define RESET_ 22  // PC6 pin 28   Z80 RESET
 //#define   MCU_RTS_      23    // PC7 pin 29   * RESERVED - NOT USED *
-#define   irqPin        23    // PC7 pin 29   MPR121
-#define   SNMI          10    // PD2 pin 16   SNMI * MCU_CTS_  * RESERVED - NOT USED *
+#define irqPin 23  // PC7 pin 29   MPR121
+#define SNMI 10    // PD2 pin 16   SNMI * MCU_CTS_  * RESERVED - NOT USED *
 //#define   BANK1         11    // PD3 pin 17   BANK1  RAM Memory bank address (High)
-#define   NMI           12    // PD4 pin 18   NMI generowane przez TIMER1
-#define   INT_           1    // PB1 pin 2    Z80 control bus
-#define   MEM_EN_        2    // PB2 pin 3    RAM Chip Enable (CE2). Active HIGH. Used only during boot
-#define   WAIT_          3    // PB3 pin 4    Z80 WAIT
+#define NMI 12     // PD4 pin 18   NMI generowane przez TIMER1
+#define INT_ 1     // PB1 pin 2    Z80 control bus
+#define MEM_EN_ 2  // PB2 pin 3    RAM Chip Enable (CE2). Active HIGH. Used only during boot
+#define WAIT_ 3    // PB3 pin 4    Z80 WAIT
 //#define   SS_            4    // PB4 pin 5    SD SPI
-#define   MOSI           5    // PB5 pin 6    SD SPI
-#define   MISO           6    // PB6 pin 7    SD SPI
-#define   SCK            7    // PB7 pin 8    SD SPI
-#define   BUSREQ_       14    // PD6 pin 20   Z80 BUSRQ
-#define   CLK           15    // PD7 pin 21   Z80 CLK
-#define   SCL_PC0       16    // PC0 pin 22   IOEXP connector (I2C)
-#define   SDA_PC1       17    // PC1 pin 23   IOEXP connector (I2C)
-#define   LED_IOS        0    // PB0 pin 1    Led LED_IOS is ON if HIGH
-#define   WAIT_RES_      0    // PB0 pin 1    Reset the Wait FF
-#define   USER          13    // PD5 pin 19   Led USER and key (led USER is ON if LOW)
-#define   DS3231_RTC    0x68  // DS3231 I2C address
-#define   DS3231_SECRG  0x00  // DS3231 Seconds Register
-#define   DS3231_STATRG 0x0F  // DS3231 Status Register
-const word   CA80_SEC = 0xFFED; // Zegar CA80
+#define MOSI 5                 // PB5 pin 6    SD SPI
+#define MISO 6                 // PB6 pin 7    SD SPI
+#define SCK 7                  // PB7 pin 8    SD SPI
+#define BUSREQ_ 14             // PD6 pin 20   Z80 BUSRQ
+#define CLK 15                 // PD7 pin 21   Z80 CLK
+#define SCL_PC0 16             // PC0 pin 22   IOEXP connector (I2C)
+#define SDA_PC1 17             // PC1 pin 23   IOEXP connector (I2C)
+#define LED_IOS 0              // PB0 pin 1    Led LED_IOS is ON if HIGH
+#define WAIT_RES_ 0            // PB0 pin 1    Reset the Wait FF
+#define USER 13                // PD5 pin 19   Led USER and key (led USER is ON if LOW)
+#define DS3231_RTC 0x68        // DS3231 I2C address
+#define DS3231_SECRG 0x00      // DS3231 Seconds Register
+#define DS3231_STATRG 0x0F     // DS3231 Status Register
+const word CA80_SEC = 0xFFED;  // Zegar CA80
 
 // ------------------------------------------------------------------------------
 //
@@ -71,11 +73,11 @@ const word   CA80_SEC = 0xFFED; // Zegar CA80
 // ------------------------------------------------------------------------------
 
 #if F_CPU == 20000000
-#define CLOCK_LOW   "5"
-#define CLOCK_HIGH  "10"
+#define CLOCK_LOW "5"
+#define CLOCK_HIGH "10"
 #else
-#define CLOCK_LOW   "4"
-#define CLOCK_HIGH  "8"
+#define CLOCK_LOW "4"
+#define CLOCK_HIGH "8"
 #endif
 
 // ------------------------------------------------------------------------------
@@ -84,27 +86,26 @@ const word   CA80_SEC = 0xFFED; // Zegar CA80
 //
 // ------------------------------------------------------------------------------
 
-#include <avr/pgmspace.h>                 // Needed for PROGMEM
-#include <EEPROM.h>                       // Needed for internal EEPROM R/W
+#include <avr/pgmspace.h>  // Needed for PROGMEM
+#include <EEPROM.h>        // Needed for internal EEPROM R/W
 // ------------------------------------------------------------------------------
 //
 //  Constants
 //
 // ------------------------------------------------------------------------------
 
-const byte    LD_HL        =  0x36;       // Opcode of the Z80 instruction: LD(HL), n
-const byte    INC_HL       =  0x23;       // Opcode of the Z80 instruction: INC HL
-const byte    LD_HLnn      =  0x21;       // Opcode of the Z80 instruction: LD HL, nn
-const byte    JP_nn        =  0xC3;       // Opcode of the Z80 instruction: JP nn
-const byte    debug        = 0;           // Debug off = 0, on = 1, on = 2 with interrupt trace
-const byte    bootModeAddr = 10;          // Internal EEPROM address for boot mode storage
-const byte    autoexecFlagAddr = 12;      // Internal EEPROM address for AUTOEXEC flag storage
-const byte    clockModeAddr = 13;         // Internal EEPROM address for the Z80 clock high/low speed switch
+const byte LD_HL = 0x36;           // Opcode of the Z80 instruction: LD(HL), n
+const byte INC_HL = 0x23;          // Opcode of the Z80 instruction: INC HL
+const byte LD_HLnn = 0x21;         // Opcode of the Z80 instruction: LD HL, nn
+const byte JP_nn = 0xC3;           // Opcode of the Z80 instruction: JP nn
+const byte debug = 0;              // Debug off = 0, on = 1, on = 2 with interrupt trace
+const byte bootModeAddr = 10;      // Internal EEPROM address for boot mode storage
+const byte autoexecFlagAddr = 12;  // Internal EEPROM address for AUTOEXEC flag storage
+const byte clockModeAddr = 13;     // Internal EEPROM address for the Z80 clock high/low speed switch
 //  (1 = low speed, 0 = high speed)
 // Z80 programs images into flash and related constants
-const word  boot_A_StrAddr = 0x0;      // Payload A image starting address (flash)
-const byte  boot_A_[] PROGMEM =
-{ // Payload CA80 image
+const word boot_A_StrAddr = 0x0;  // Payload A image starting address (flash)
+const byte boot_A_[] PROGMEM = {  // Payload CA80 image
   0x00, 0x00, 0x00, 0x00, 0xC3, 0x56, 0x01, 0xEF, 0xC5, 0xCD, 0xC6, 0xFF,
   0xF5, 0x4F, 0x18, 0x2B, 0xEF, 0xC5, 0x0E, 0x00, 0x06, 0x08, 0x18, 0x29,
   0x4F, 0xEF, 0x79, 0xE5, 0xD5, 0xC3, 0x0D, 0x01, 0xEF, 0x7D, 0xCD, 0x1B,
@@ -790,7 +791,7 @@ const byte  boot_A_[] PROGMEM =
   0x01, 0x02, 0xAA, 0x22, 0x00, 0x05, 0x01, 0xFF
 };
 
-const byte * const flashBootTable[1] PROGMEM = {boot_A_}; // Payload pointers table (flash)
+const byte *const flashBootTable[1] PROGMEM = { boot_A_ };  // Payload pointers table (flash)
 
 // ------------------------------------------------------------------------------
 //
@@ -799,106 +800,93 @@ const byte * const flashBootTable[1] PROGMEM = {boot_A_}; // Payload pointers ta
 // ------------------------------------------------------------------------------
 
 // General purpose variables
-byte          ioAddress;                  // Virtual I/O address. Only two possible addresses are valid (0x00 and 0x01)
-byte          ioData;                     // Data byte used for the I/O operation
-byte          ioOpcode       = 0xFF;      // I/O operation code or Opcode (0xFF means "No Operation")
-word          ioByteCnt;                  // Exchanged bytes counter during an I/O operation
-byte          tempByte;                   // Temporary variable (buffer)
+byte ioAddress;        // Virtual I/O address. Only two possible addresses are valid (0x00 and 0x01)
+byte ioData;           // Data byte used for the I/O operation
+byte ioOpcode = 0xFF;  // I/O operation code or Opcode (0xFF means "No Operation")
+word ioByteCnt;        // Exchanged bytes counter during an I/O operation
+byte tempByte;         // Temporary variable (buffer)
 //byte          moduleGPIO     = 0;         // Set to 1 if the module is found, 0 otherwise
-byte          bootMode       = 0;         // Set the program to boot (from flash or SD)
-byte *        BootImage;                  // Pointer to selected flash payload array (image) to boot
-word          BootImageSize  = 0;         // Size of the selected flash payload array (image) to boot
-word          BootStrAddr;                // Starting address of the selected program to boot (from flash or SD)
-byte          Z80IntEnFlag   = 0;         // Z80 INT_ enable flag (0 = No INT_ used, 1 = INT_ used for I/O)
-unsigned long timeStamp;                  // Timestamp for led blinking
-char          inChar;                     // Input char from serial
-byte          iCount;                     // Temporary variable (counter)
-byte          clockMode;                  // Z80 clock HI/LO speed selector (0 = 8/10MHz, 1 = 4/5MHz)
+byte bootMode = 0;        // Set the program to boot (from flash or SD)
+byte *BootImage;          // Pointer to selected flash payload array (image) to boot
+word BootImageSize = 0;   // Size of the selected flash payload array (image) to boot
+word BootStrAddr;         // Starting address of the selected program to boot (from flash or SD)
+byte Z80IntEnFlag = 0;    // Z80 INT_ enable flag (0 = No INT_ used, 1 = INT_ used for I/O)
+unsigned long timeStamp;  // Timestamp for led blinking
+char inChar;              // Input char from serial
+byte iCount;              // Temporary variable (counter)
+byte clockMode;           // Z80 clock HI/LO speed selector (0 = 8/10MHz, 1 = 4/5MHz)
 // ------------------------------------------------------------------------------
 
 // DS3231 RTC variables
-byte          foundRTC;                   // Set to 1 if RTC is found, 0 otherwise
+byte foundRTC;  // Set to 1 if RTC is found, 0 otherwise
 //seconds, minutes, hours, dayOfWeek, day, month, year;
-byte          time[7];
+byte time[7];
 
 void readRTC()
 // Read current date/time binary values from the DS3231 RTC
 {
   Wire.beginTransmission(DS3231_RTC);
-  Wire.write(DS3231_SECRG);                       // Set the DS3231 Seconds Register
+  Wire.write(DS3231_SECRG);  // Set the DS3231 Seconds Register
   Wire.endTransmission();
   // Read from RTC
   Wire.requestFrom(DS3231_RTC, 7);
-  for (byte i = 0; i < 7; i++)
-  {
+  for (byte i = 0; i < 7; i++) {
     time[i] = Wire.read();
   }
 }
 
-void sendTime()
-{
-  digitalWrite(MEM_EN_, LOW);         // Force the RAM in HiZ (CE2 = LOW)
-  loadHL(CA80_SEC);                   // Set Z80 HL = SEC (used as pointer to RAM);
+void sendTime() {
+  digitalWrite(MEM_EN_, LOW);  // Force the RAM in HiZ (CE2 = LOW)
+  loadHL(CA80_SEC);            // Set Z80 HL = SEC (used as pointer to RAM);
   {
     Serial.println("Real time setting...");
-    for (word i = 0; i < 7; i++)
-    {
-      loadByteToRAM(time[i]);         // Write current data byte into RAM
+    for (word i = 0; i < 7; i++) {
+      loadByteToRAM(time[i]);  // Write current data byte into RAM
     }
   }
 }
 
-void sendRecord()
-{
-  if (myFile.available())
-  {
+void sendRecord() {
+  if (myFile.available()) {
     byte i = getByteFromFile();
     word adr = getAdrFromFile();
     byte typ = getByteFromFile();
-    if (typ == 0)
-    {
+    if (typ == 0) {
       sendDataToCA80(i, adr);
-    }
-    else
-    {
-      if (debug)
-      {
+    } else {
+      if (debug) {
         Serial.println("Koniec pliku CA80.HEX");
       }
     }
-    byte suma = getByteFromFile(); // zakladam, ze plik jest poprawny i nie sprawdzam sumy
+    byte suma = getByteFromFile();  // zakladam, ze plik jest poprawny i nie sprawdzam sumy
     // ale trzeba ja przeczytac!!!
-    myFile.read();   // tak jak znaki CR
-    myFile.read();   // i LF na koncu rekordu :-)
+    if (CR == myFile.read())  // tak jak znaki CR (jezeli sa)
+    {
+      myFile.read();  // i LF na koncu rekordu :-)
+    }
   }
 }
 
-byte getByteFromFile()
-{
+byte getByteFromFile() {
   byte h, l;
-  if (myFile.available())
-  {
+  if (myFile.available()) {
     h = myFile.read();
     h = h - 0x30;
-    if (h > 0x09)
-    {
+    if (h > 0x09) {
       h = h - 0x07;
     }
   }
-  if (myFile.available())
-  {
+  if (myFile.available()) {
     l = myFile.read();
     l = l - 0x30;
-    if (l > 0x09)
-    {
+    if (l > 0x09) {
       l = l - 0x07;
     }
   }
   return ((16 * h) + l);
 }
 
-word getAdrFromFile()
-{
+word getAdrFromFile() {
   byte h = getByteFromFile();
   byte l = getByteFromFile();
   return ((256 * h) + l);
@@ -906,115 +894,106 @@ word getAdrFromFile()
 
 void sendDataToCA80(byte l, word adr)  //l - liczba bajtow do przeslania, adr - adres pierwszego bajtu
 {
-  digitalWrite(MEM_EN_, LOW);         // Force the RAM in HiZ (CE2 = LOW)
-  if (debug)
-  {
+  digitalWrite(MEM_EN_, LOW);  // Force the RAM in HiZ (CE2 = LOW)
+  if (debug) {
     Serial.print("Wpisanie rekordu z pliku CA80.HEX...");
-    Serial.println(adr , HEX);
+    Serial.println(adr, HEX);
   }
-  loadHL(adr);                   // Set Z80 HL = SEC (used as pointer to RAM);
-  for (byte i = 0; i < l; i++)
-  {
+  loadHL(adr);  // Set Z80 HL = SEC (used as pointer to RAM);
+  for (byte i = 0; i < l; i++) {
     byte b = getByteFromFile();
-    loadByteToRAM(b);         // Write current data byte into RAM (adr w HL, HL++),
+    loadByteToRAM(b);  // Write current data byte into RAM (adr w HL, HL++),
   }
 }
 
-void sendFileFromSD()
-{
+void sendFileFromSD() {
   Serial.println("Initializing SD card...");
   delay(200);
-  if (!SD.begin(SD_CS))
-  {
-    digitalWrite(errorLED, 1);//initialization failed
+  if (!SD.begin(SD_CS)) {
+    digitalWrite(errorLED, 1);  //initialization failed
     return;
   }
-  digitalWrite(errorLED, 0);//initialization done
-  myFile = SD.open("CA80.HEX"); // re-open the file for reading:
-  if (myFile)
-  {
-    digitalWrite(fileOpenLED, 1);//Serial.println("CA80.HEX:");
-    while (myFile.available())// read from the file until there's nothing else in it
+  digitalWrite(errorLED, 0);     //initialization done
+  myFile = SD.open("CA80.HEX");  // re-open the file for reading:
+  if (myFile) {
+    digitalWrite(fileOpenLED, 1);  //Serial.println("CA80.HEX:");
+    while (myFile.available())     // read from the file until there's nothing else in it
     {
       byte c = (myFile.read());
-      if (c  == 0x3a)
-      {
+      if (c == 0x3a) {
         sendRecord();
-      }
-      else
-      {
-        digitalWrite(errorLED, 1);//("error: wrong format CA80.HEX");
+      } else {
+        digitalWrite(errorLED, 1);  //("error: wrong format CA80.HEX");
       }
     }
     // close the file:
     myFile.close();
     digitalWrite(fileOpenLED, 0);
-  }
-  else
-  {
-    digitalWrite(errorLED, 1);// if the file didn't open, print an error:
+  } else {
+    digitalWrite(errorLED, 1);  // if the file didn't open, print an error:
   }
 }
 
-void setup()
-{
+void setup() {
   // ------------------------------------------------------------------------------
   //
   //  Local variables
   //
   // ------------------------------------------------------------------------------
 
-  byte          data;                       // External RAM data byte
-  word          address;                    // External RAM current address;
-  char          minBootChar   = '1';        // Minimum allowed ASCII value selection (boot selection)
-  char          maxSelChar    = '8';        // Maximum allowed ASCII value selection (boot selection)
-  byte          maxBootMode   = 4;          // Default maximum allowed value for bootMode [0..4]
-  byte          bootSelection = 0;          // Flag to enter into the boot mode selection
+  byte data;               // External RAM data byte
+  word address;            // External RAM current address;
+  char minBootChar = '1';  // Minimum allowed ASCII value selection (boot selection)
+  char maxSelChar = '8';   // Maximum allowed ASCII value selection (boot selection)
+  byte maxBootMode = 4;    // Default maximum allowed value for bootMode [0..4]
+  byte bootSelection = 0;  // Flag to enter into the boot mode selection
 
   // ------------------------------------------------------------------------------
 
-  Wire.begin();                                   // Wake up I2C bus
+  Wire.begin();  // Wake up I2C bus
   Serial.begin(115200);
+  Serial.println(F(VER));
+
 
   // ----------------------------------------
   // INITIALIZATION
   // ----------------------------------------
 
   // Initialize RESET_ and WAIT_RES_
-  pinMode(RESET_, OUTPUT);                        // Configure RESET_ and set it ACTIVE
+  pinMode(RESET_, OUTPUT);  // Configure RESET_ and set it ACTIVE
   digitalWrite(RESET_, LOW);
-  pinMode(WAIT_RES_, OUTPUT);                     // Configure WAIT_RES_ and set it ACTIVE to reset the WAIT FF (U1C/D)
+  pinMode(WAIT_RES_, OUTPUT);  // Configure WAIT_RES_ and set it ACTIVE to reset the WAIT FF (U1C/D)
   digitalWrite(WAIT_RES_, LOW);
 
   // Check USER Key for boot mode changes
-  pinMode(USER, INPUT_PULLUP);                    // Read USER Key to enter into the boot mode selection
+  pinMode(USER, INPUT_PULLUP);  // Read USER Key to enter into the boot mode selection
   if (!digitalRead(USER)) bootSelection = 1;
 
   // Initialize USER,  INT_, MEM_EN_, and BUSREQ_
-  pinMode(USER, OUTPUT);                          // USER led OFF
+  pinMode(USER, OUTPUT);  // USER led OFF
   digitalWrite(USER, HIGH);
-  pinMode(INT_, INPUT_PULLUP);                    // Configure INT_ and set it NOT ACTIVE
+  pinMode(INT_, INPUT_PULLUP);  // Configure INT_ and set it NOT ACTIVE
   //pinMode(INT_, OUTPUT);
   //digitalWrite(INT_, HIGH);
-  pinMode(MEM_EN_, OUTPUT);                       // Configure MEM_EN_ as output
-  digitalWrite(MEM_EN_, HIGH);                    // Set MEM_EN_ HZ
-  pinMode(WAIT_, INPUT);                          // Configure WAIT_ as input
-  pinMode(BUSREQ_, INPUT_PULLUP);                 // Set BUSREQ_ HIGH
+  pinMode(MEM_EN_, OUTPUT);        // Configure MEM_EN_ as output
+  digitalWrite(MEM_EN_, HIGH);     // Set MEM_EN_ HZ
+  pinMode(WAIT_, INPUT);           // Configure WAIT_ as input
+  pinMode(BUSREQ_, INPUT_PULLUP);  // Set BUSREQ_ HIGH
   pinMode(BUSREQ_, OUTPUT);
   digitalWrite(BUSREQ_, HIGH);
 
   // Initialize D0-D7, AD0, MREQ_, RD_ and WR_
-  DDRA = 0x00;                                    // Configure Z80 data bus D0-D7 (PA0-PA7) as input with pull-up
+  DDRA = 0x00;  // Configure Z80 data bus D0-D7 (PA0-PA7) as input with pull-up
   PORTA = 0xFF;
   //pinMode(MREQ_, INPUT_PULLUP);                   // Configure MREQ_ as input with pull-up
-  pinMode(RD_, INPUT_PULLUP);                     // Configure RD_ as input with pull-up
-  pinMode(WR_, INPUT_PULLUP);                     // Configure WR_ as input with pull-up
+  pinMode(RD_, INPUT_PULLUP);  // Configure RD_ as input with pull-up
+  pinMode(WR_, INPUT_PULLUP);  // Configure WR_ as input with pull-up
   pinMode(AD0, INPUT_PULLUP);
 
   // Initialize CLK (single clock pulses mode) and reset the Z80 CPU
-  pinMode(CLK, OUTPUT);                           // Set CLK as output
+  pinMode(CLK, OUTPUT);  // Set CLK as output
   digitalWrite(CLK, LOW);
-  singlePulsesResetZ80();                         // Reset the Z80 CPU using single clock pulses
+  singlePulsesResetZ80();  // Reset the Z80 CPU using single clock pulses
 
   // inicjacja klawiatury dotykowej CA80
   pinMode(irqPin, INPUT);
@@ -1022,15 +1001,15 @@ void setup()
   mpr121_setup();
 
   // Initialize MCU_RTS and MCU_CTS and reset uTerm (A071218-R250119) if present
-  pinMode(SNMI, OUTPUT);                      // Blokada NMI i INT w CA80
+  pinMode(SNMI, OUTPUT);  // Blokada NMI i INT w CA80
   digitalWrite(SNMI, HIGH);
   // Read the Z80 CPU speed mode
-  if (EEPROM.read(clockModeAddr) > 1)             // Check if it is a valid value, otherwise set it to low speed
-    // Not a valid value. Set it to low speed
+  if (EEPROM.read(clockModeAddr) > 1)  // Check if it is a valid value, otherwise set it to low speed
+  // Not a valid value. Set it to low speed
   {
     EEPROM.update(clockModeAddr, 1);
   }
-  clockMode = EEPROM.read(clockModeAddr);         // Read the previous stored value
+  clockMode = EEPROM.read(clockModeAddr);  // Read the previous stored value
 
   // Print some system information
   Serial.println(F("\r\n\nCA80 MONITOR loader\r\n"));
@@ -1041,24 +1020,23 @@ void setup()
   else Serial.print(CLOCK_HIGH);
   Serial.println("MHz.");
 
-  while (Serial.available() > 0) Serial.read();   // Flush serial Rx buffer
-  digitalWrite(MEM_EN_, LOW);         // Force the RAM in HiZ (CE2 = LOW)
+  while (Serial.available() > 0) Serial.read();  // Flush serial Rx buffer
+  digitalWrite(MEM_EN_, LOW);                    // Force the RAM in HiZ (CE2 = LOW)
   pinMode(errorLED, OUTPUT);
   pinMode(fileOpenLED, OUTPUT);
   digitalWrite(errorLED, 0);
   digitalWrite(fileOpenLED, 0);
   sendFileFromSD();
 
-  BootImage = (byte *) pgm_read_word (&flashBootTable[0]);
+  BootImage = (byte *)pgm_read_word(&flashBootTable[0]);
   BootImageSize = sizeof(boot_A_);
   BootStrAddr = boot_A_StrAddr;
 
   // Execute the load of the selected file on SD or image on flash
-  loadHL(BootStrAddr);                            // Set Z80 HL = boot starting address (used as pointer to RAM);
+  loadHL(BootStrAddr);  // Set Z80 HL = boot starting address (used as pointer to RAM);
   //
   // DEBUG ----------------------------------
-  if (debug)
-  {
+  if (debug) {
     Serial.print("DEBUG: Flash BootImageSize = ");
     Serial.println(BootImageSize);
     Serial.print("DEBUG: BootStrAddr = ");
@@ -1072,7 +1050,7 @@ void setup()
     digitalWrite(USER, LOW);
 
     for (word i = 0; i < BootImageSize; i++)
-      // Write boot program into external RAM
+    // Write boot program into external RAM
     {
       loadByteToRAM(pgm_read_byte(BootImage + i));  // Write current data byte into EEPROM
     }
@@ -1085,52 +1063,50 @@ void setup()
   // Z80 BOOT
   // ----------------------------------------
 
-  digitalWrite(RESET_, LOW);                      // Activate the RESET_ signal
+  digitalWrite(RESET_, LOW);  // Activate the RESET_ signal
 
   // Initialize CLK @ 4/8MHz (@ Fosc = 16MHz). Z80 clock_freq = (Atmega_clock) / ((OCR2 + 1) * 2)
-  ASSR &= ~(1 << AS2);                            // Set Timer2 clock from system clock
-  TCCR2 |= (1 << CS20);                           // Set Timer2 clock to "no prescaling"
+  ASSR &= ~(1 << AS2);   // Set Timer2 clock from system clock
+  TCCR2 |= (1 << CS20);  // Set Timer2 clock to "no prescaling"
   TCCR2 &= ~((1 << CS21) | (1 << CS22));
-  TCCR2 |= (1 << WGM21);                          // Set Timer2 CTC mode
+  TCCR2 |= (1 << WGM21);  // Set Timer2 CTC mode
   TCCR2 &= ~(1 << WGM20);
-  TCCR2 |= (1 <<  COM20);                         // Set "toggle OC2 on compare match"
+  TCCR2 |= (1 << COM20);  // Set "toggle OC2 on compare match"
   TCCR2 &= ~(1 << COM21);
-  OCR2 = clockMode;                               // Set the compare value to toggle OC2 (0 = low or 1 = high)
-  pinMode(CLK, OUTPUT);                           // Set OC2 as output and start to output the clock
+  OCR2 = clockMode;      // Set the compare value to toggle OC2 (0 = low or 1 = high)
+  pinMode(CLK, OUTPUT);  // Set OC2 as output and start to output the clock
   Serial.println("Z80 is running from now");
   Serial.println();
 
   // Flush serial Rx buffer
-  while (Serial.available() > 0)
-  {
+  while (Serial.available() > 0) {
     Serial.read();
   }
 
   // Leave the Z80 CPU running
-  delay(1);                                       // Just to be sure...
-  digitalWrite(RESET_, HIGH);                     // Release Z80 from reset and let it run
-  delay(5);                                       // Dla pewnosci zamiast SNMI_ (MCU_CTS)
+  delay(1);                    // Just to be sure...
+  digitalWrite(RESET_, HIGH);  // Release Z80 from reset and let it run
+  delay(5);                    // Dla pewnosci zamiast SNMI_ (MCU_CTS)
   // TIMER1 ustawiamy na 1000 Hz:
-  TCCR1A = 0;                                     // zerujemy TCCR1A
-  TCCR1A |= (1 << COM1B0) | (1 << FOC1B);         // PD4 500 Hz NMI
-  TCCR1B = 0;                                     // zerujemy TCCR1B
-  TCNT1  = 0;                                     // zerujemy licznik
+  TCCR1A = 0;                              // zerujemy TCCR1A
+  TCCR1A |= (1 << COM1B0) | (1 << FOC1B);  // PD4 500 Hz NMI
+  TCCR1B = 0;                              // zerujemy TCCR1B
+  TCNT1 = 0;                               // zerujemy licznik
   //  1000 Hz
-  OCR1A = 15999; // = 16000000 / (1 * 1000) - 1 (must be <65536)
-  OCR1B = 15000; // wartosc prawie dowolna
+  OCR1A = 15999;  // = 16000000 / (1 * 1000) - 1 (must be <65536)
+  OCR1B = 15000;  // wartosc prawie dowolna
   // CTC mode
   TCCR1B |= (1 << WGM12);
   // ustawiamy prescaler
   TCCR1B |= (0 << CS12) | (0 << CS11) | (1 << CS10);
-  pinMode(NMI, OUTPUT);                           // PD4 jako wyjscie
+  pinMode(NMI, OUTPUT);  // PD4 jako wyjscie
 
   //digitalWrite(SNMI, LOW);                    // Odblokowanie NMI i INT
 }
 
 // ------------------------------------------------------------------------------
 
-void loop()
-{
+void loop() {
   if (!digitalRead(irqPin))
     czytajKlawiature();
 }
@@ -1142,22 +1118,22 @@ void loop()
 
 // ------------------------------------------------------------------------------
 
-#define CLK_HIGH    PORTD |= B10000000
-#define CLK_LOW     PORTD &= B01111111
+#define CLK_HIGH PORTD |= B10000000
+#define CLK_LOW PORTD &= B01111111
 #define RAM_CE_HIGH PORTB |= B00000100
-#define RAM_CE_LOW  PORTB &= B11111011
+#define RAM_CE_LOW PORTB &= B11111011
 
 void pulseClock(byte numPulse)
 // Generate <numPulse> clock pulses on the Z80 clock pin.
 // The steady clock level is LOW, e.g. one clock pulse is a 0-1-0 transition
 {
-  byte    i;
+  byte i;
   for (i = 0; i < numPulse; i++)
-    // Generate one clock pulse
+  // Generate one clock pulse
   {
     // Send one impulse (0-1-0) on the CLK output
-    CLK_HIGH;         //Bylo: digitalWrite(CLK, HIGH);  //CLK_HIGH;         //Bylo:
-    CLK_LOW;          //      digitalWrite(CLK, LOW);   //CLK_LOW;          //
+    CLK_HIGH;  //Bylo: digitalWrite(CLK, HIGH);  //CLK_HIGH;         //Bylo:
+    CLK_LOW;   //      digitalWrite(CLK, LOW);   //CLK_LOW;          //
   }
 }
 
@@ -1175,33 +1151,33 @@ void loadByteToRAM(byte value)
 
   // Execute the LD(HL),n instruction (T = 4+3+3). See the Z80 datasheet and manual.
   // After the execution of this instruction the <value> byte is loaded in the memory address pointed by HL.
-  pulseClock(1);                      // Execute the T1 cycle of M1 (Opcode Fetch machine cycle)
-  RAM_CE_LOW; //digitalWrite(MEM_EN_, !LOW);         // Force the RAM in HiZ (CE2 = LOW)
-  DDRA = 0xFF;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as output
-  PORTA = LD_HL;                      // Write "LD (HL), n" opcode on data bus
-  pulseClock(2);                      // Execute T2 and T3 cycles of M1
-  DDRA = 0x00;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
-  PORTA = 0xFF;                       // ...with pull-up
-  pulseClock(2);                      // Complete the execution of M1 and execute the T1 cycle of the following
+  pulseClock(1);  // Execute the T1 cycle of M1 (Opcode Fetch machine cycle)
+  RAM_CE_LOW;     //digitalWrite(MEM_EN_, !LOW);         // Force the RAM in HiZ (CE2 = LOW)
+  DDRA = 0xFF;    // Configure Z80 data bus D0-D7 (PA0-PA7) as output
+  PORTA = LD_HL;  // Write "LD (HL), n" opcode on data bus
+  pulseClock(2);  // Execute T2 and T3 cycles of M1
+  DDRA = 0x00;    // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
+  PORTA = 0xFF;   // ...with pull-up
+  pulseClock(2);  // Complete the execution of M1 and execute the T1 cycle of the following
   // Memory Read machine cycle
-  DDRA = 0xFF;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as output
-  PORTA = value;                      // Write the byte to load in RAM on data bus
-  pulseClock(2);                      // Execute the T2 and T3 cycles of the Memory Read machine cycle
-  DDRA = 0x00;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
-  PORTA = 0xFF;                       // ...with pull-up
-  RAM_CE_HIGH;                        // Enable the RAM again (CE2 = HIGH)
-  pulseClock(3);                      // Execute all the following Memory Write machine cycle
+  DDRA = 0xFF;    // Configure Z80 data bus D0-D7 (PA0-PA7) as output
+  PORTA = value;  // Write the byte to load in RAM on data bus
+  pulseClock(2);  // Execute the T2 and T3 cycles of the Memory Read machine cycle
+  DDRA = 0x00;    // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
+  PORTA = 0xFF;   // ...with pull-up
+  RAM_CE_HIGH;    // Enable the RAM again (CE2 = HIGH)
+  pulseClock(3);  // Execute all the following Memory Write machine cycle
   // Execute the INC(HL) instruction (T = 6). See the Z80 datasheet and manual.
   // After the execution of this instruction HL points to the next memory address.
-  pulseClock(1);                      // Execute the T1 cycle of M1 (Opcode Fetch machine cycle)
-  RAM_CE_LOW;                         // Force the RAM in HiZ (CE2 = LOW)
-  DDRA = 0xFF;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as output
-  PORTA = INC_HL;                     // Write "INC(HL)" opcode on data bus
-  pulseClock(2);                      // Execute T2 and T3 cycles of M1
-  DDRA = 0x00;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
-  PORTA = 0xFF;                       // ...with pull-up
-  RAM_CE_HIGH;   //digitalWrite(MEM_EN_, HIGH);        // Enable the RAM again (CE2 = HIGH)
-  pulseClock(3);                      // Execute all the remaining T cycles
+  pulseClock(1);   // Execute the T1 cycle of M1 (Opcode Fetch machine cycle)
+  RAM_CE_LOW;      // Force the RAM in HiZ (CE2 = LOW)
+  DDRA = 0xFF;     // Configure Z80 data bus D0-D7 (PA0-PA7) as output
+  PORTA = INC_HL;  // Write "INC(HL)" opcode on data bus
+  pulseClock(2);   // Execute T2 and T3 cycles of M1
+  DDRA = 0x00;     // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
+  PORTA = 0xFF;    // ...with pull-up
+  RAM_CE_HIGH;     //digitalWrite(MEM_EN_, HIGH);        // Enable the RAM again (CE2 = HIGH)
+  pulseClock(3);   // Execute all the remaining T cycles
 }
 
 // ------------------------------------------------------------------------------
@@ -1212,24 +1188,24 @@ void loadHL(word value)
 {
   // Execute the LD dd,nn instruction (T = 4+3+3), with dd = HL and nn = value. See the Z80 datasheet and manual.
   // After the execution of this instruction the word "value" (16bit) is loaded into HL.
-  pulseClock(1);                      // Execute the T1 cycle of M1 (Opcode Fetch machine cycle)
-  RAM_CE_LOW;                         // Force the RAM in HiZ (CE2 = LOW)
-  DDRA = 0xFF;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as output
-  PORTA = LD_HLnn;                    // Write "LD HL, n" opcode on data bus
-  pulseClock(2);                      // Execute T2 and T3 cycles of M1
-  DDRA = 0x00;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
-  PORTA = 0xFF;                       // ...with pull-up
-  pulseClock(2);                      // Complete the execution of M1 and execute the T1 cycle of the following
+  pulseClock(1);    // Execute the T1 cycle of M1 (Opcode Fetch machine cycle)
+  RAM_CE_LOW;       // Force the RAM in HiZ (CE2 = LOW)
+  DDRA = 0xFF;      // Configure Z80 data bus D0-D7 (PA0-PA7) as output
+  PORTA = LD_HLnn;  // Write "LD HL, n" opcode on data bus
+  pulseClock(2);    // Execute T2 and T3 cycles of M1
+  DDRA = 0x00;      // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
+  PORTA = 0xFF;     // ...with pull-up
+  pulseClock(2);    // Complete the execution of M1 and execute the T1 cycle of the following
   // Memory Read machine cycle
-  DDRA = 0xFF;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as output
-  PORTA = lowByte(value);             // Write first byte of "value" to load in HL
-  pulseClock(3);                      // Execute the T2 and T3 cycles of the first Memory Read machine cycle
+  DDRA = 0xFF;             // Configure Z80 data bus D0-D7 (PA0-PA7) as output
+  PORTA = lowByte(value);  // Write first byte of "value" to load in HL
+  pulseClock(3);           // Execute the T2 and T3 cycles of the first Memory Read machine cycle
   // and T1, of the second Memory Read machine cycle
-  PORTA = highByte(value);            // Write second byte of "value" to load in HL
-  pulseClock(2);                      // Execute the T2 and T3 cycles of the second Memory Read machine cycle
-  DDRA = 0x00;                        // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
-  PORTA = 0xFF;                       // ...with pull-up
-  RAM_CE_HIGH;                        // Enable the RAM again (CE2 = HIGH) (Dla EEPROM /CE)
+  PORTA = highByte(value);  // Write second byte of "value" to load in HL
+  pulseClock(2);            // Execute the T2 and T3 cycles of the second Memory Read machine cycle
+  DDRA = 0x00;              // Configure Z80 data bus D0-D7 (PA0-PA7) as input...
+  PORTA = 0xFF;             // ...with pull-up
+  RAM_CE_HIGH;              // Enable the RAM again (CE2 = HIGH) (Dla EEPROM /CE)
 }
 
 // ------------------------------------------------------------------------------
@@ -1237,18 +1213,18 @@ void loadHL(word value)
 void singlePulsesResetZ80()
 // Reset the Z80 CPU using single pulses clock
 {
-  digitalWrite(RESET_, LOW);          // Set RESET_ active
-  pulseClock(6);                      // Generate twice the needed clock pulses to reset the Z80
-  digitalWrite(RESET_, HIGH);         // Set RESET_ not active
-  pulseClock(2);                      // Needed two more clock pulses after RESET_ goes HIGH
+  digitalWrite(RESET_, LOW);   // Set RESET_ active
+  pulseClock(6);               // Generate twice the needed clock pulses to reset the Z80
+  digitalWrite(RESET_, HIGH);  // Set RESET_ not active
+  pulseClock(2);               // Needed two more clock pulses after RESET_ goes HIGH
 }
 
 // ------------------------------------------------------------------------------
 //  Stale klawiatury
 // ------------------------------------------------------------------------------
 
-const byte PCF_kbd = 0x38;     //Adres PCF8574A 0x38 , dla PCF8574 0x20
-const byte MPR121 = 0x5A;      //Adres MPR121
+const byte PCF_kbd = 0x38;  //Adres PCF8574A 0x38 , dla PCF8574 0x20
+const byte MPR121 = 0x5A;   //Adres MPR121
 
 // ------------------------------------------------------------------------------
 // Kody klawiszy tworzymy wg. wzoru: starsza cyfra nr kolumny, mlodsza ma zero na pozycji
@@ -1265,8 +1241,7 @@ const byte MPR121 = 0x5A;      //Adres MPR121
 //  Funkcje klawiatury
 // ------------------------------------------------------------------------------
 
-void czytajKlawiature()
-{
+void czytajKlawiature() {
   byte touchNumber;
   //while (checkInterrupt());
   uint16_t touchstatus;
@@ -1274,54 +1249,46 @@ void czytajKlawiature()
   Wire.requestFrom(MPR121, 2);  //read the touch state from the MPR121
   byte LSB = Wire.read();
   byte MSB = Wire.read();
-  touchstatus = ((MSB << 8) | LSB); //16bits that make up the touch states
+  touchstatus = ((MSB << 8) | LSB);  //16bits that make up the touch states
   byte row = 0;
   byte column = 0;
-  for (byte j = 0; j < 4; j++) // Check how many electrodes were pressed
+  for (byte j = 0; j < 4; j++)  // Check how many electrodes were pressed
   {
-    if ((touchstatus & (1 << j)))
-    {
+    if ((touchstatus & (1 << j))) {
       touchNumber++;
       row |= 1 << (3 - j);  // Odwrotna kolejnosc elektrod...
     }
   }
-  if (touchNumber == 1)
-  {
+  if (touchNumber == 1) {
     //Serial.print(row);
     touchNumber = 0;
-    for (byte j = 4; j < 10; j++) // Check how many electrodes were pressed
+    for (byte j = 4; j < 10; j++)  // Check how many electrodes were pressed
     {
       if ((touchstatus & (1 << j)))
         touchNumber++;
     }
-    if (touchNumber == 1)
-    {
+    if (touchNumber == 1) {
       byte col = touchstatus & 0x3F0;
-      for (byte j = 4; j < 10; j++) // Check which electrode were pressed
+      for (byte j = 4; j < 10; j++)  // Check which electrode were pressed
       {
         if ((touchstatus & (1 << j)))
-          column = 5 - (j - 4);   // Tez wyszlo odwrotnie
+          column = 5 - (j - 4);  // Tez wyszlo odwrotnie
       }
       //Serial.println(column);
-      byte keyCode = (row ^ 0xF) | ( column << 4 ); // Obliczamy kod klawisza
+      byte keyCode = (row ^ 0xF) | (column << 4);  // Obliczamy kod klawisza
       sendKey(keyCode);
-    }
-    else
-    {
+    } else {
       byte keyCode = 0xFF;  //noKey()
       sendKey(keyCode);
     }
-  }
-  else
-  {
+  } else {
     byte keyCode = 0xFF;
-    sendKey(keyCode);     //noKey()
+    sendKey(keyCode);  //noKey()
   }
 }
 
 
-void mpr121_setup(void)
-{
+void mpr121_setup(void) {
   set_register(MPR121, ELE_CFG, 0x00);
 
   // Section A - Controls filtering when data is > baseline.
@@ -1388,27 +1355,25 @@ void mpr121_setup(void)
   // Enable Auto Config and auto Reconfig
   /*set_register(MPR121, ATO_CFG0, 0x0B);
     set_register(MPR121, ATO_CFGU, 0xC9);  // USL = (Vdd-0.7)/vdd*256 = 0xC9 @3.3V   set_register(MPR121, ATO_CFGL, 0x82);  // LSL = 0.65*USL = 0x82 @3.3V
-    set_register(MPR121, ATO_CFGT, 0xB5);*/  // Target = 0.9*USL = 0xB5 @3.3V
+    set_register(MPR121, ATO_CFGT, 0xB5);*/
+  // Target = 0.9*USL = 0xB5 @3.3V
 
   set_register(MPR121, ELE_CFG, 0x0C);
 }
 
-void set_register(byte address, unsigned char r, unsigned char v)
-{
+void set_register(byte address, unsigned char r, unsigned char v) {
   Wire.beginTransmission(address);
   Wire.write(r);
   Wire.write(v);
   Wire.endTransmission();
 }
 
-void sendKey (byte k)
-{
-  if (debug)
-  {
+void sendKey(byte k) {
+  if (debug) {
     Serial.print(" ");
     Serial.println(k, HEX);
   }
   Wire.beginTransmission(PCF_kbd);
-  Wire.write(k);                    //Wysylamy kod klawisza
+  Wire.write(k);  //Wysylamy kod klawisza
   Wire.endTransmission();
 }
